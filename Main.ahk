@@ -13,16 +13,49 @@ SetTitleMatchMode 2
 ;;; + Shift
 ;;; # Windows
 
+altTabGroup(currentWindow, windowGroup) {
+  WinGet windows, List
+  Loop %windows%
+  {
+    id := windows%A_Index%
+    WinGetTitle window, ahk_id %id%
+    if (window != currentWindow && RegExMatch(window, windowGroup)) {
+      WinActivate, %window%
+      Break
+    }
+  }
+}
+
+; Recreate Alt-` to alt-tab between similar windows. Supports only VSCode
+!`::
+  #IfWinActive, ahk_exe Code.exe
+  WinGetTitle, windowTitle, A
+  
+  altTabGroup(windowTitle, "- Visual Studio Code")
+return
+
 GroupAdd, Browsers, ahk_class MozillaWindowClass
-GroupAdd, Browsers, ahk_class Chrome_WidgetWin_1
+; GroupAdd, Browsers, ahk_class Chrome_WidgetWin_1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                VS Code 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-#IfWinActive, AHK - Visual Studio Code
-    !r::Send, ^+{F5}
-#IfWinActive, - Visual Studio Code
-    !+p::Send, ^+p
+#IfWinActive, Wavelength - Visual Studio Code
+  !r::
+    Send ^s
+    if WinExist("ahk_exe Unity.exe")
+      WinActivate, ahk_exe Unity.exe
+      Sleep, 10
+      WinActivate, ahk_exe Code.exe
+
+  return
+#IfWinActive, .ahk - AHK - Visual Studio Code
+  !r::Send, ^+{F5}
+#IfWinActive, ahk_exe Code.exe
+  !+p::Send, ^+p
+  !w::Send ^w
+  !p::Send ^p
+  !f::Send ^f
 #IfWinActive
 
 
@@ -76,8 +109,9 @@ GroupAdd, Browsers, ahk_class Chrome_WidgetWin_1
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;        MAC-LIKE text editing 🍎
+;        MAC-STUFF 🍎
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 !c::Send, ^c
 !x::Send, ^x
@@ -113,38 +147,38 @@ GroupAdd, Browsers, ahk_class Chrome_WidgetWin_1
 
 ; Global Audio
 Volume_Mute::
-    mute := vmRead("Bus[2].Mute")
-    if (mute == 1)
-        mute := 0
-    else
-        mute := 1
-    vmSet("Bus[2].Mute", mute)
-    vmSet("Bus[1].Mute", mute)
-    vmSet("Bus[0].Mute", mute)
+  mute := vmRead("Bus[2].Mute")
+  if (mute == 1)
+      mute := 0
+  else
+      mute := 1
+  vmSet("Bus[2].Mute", mute)
+  vmSet("Bus[1].Mute", mute)
+  vmSet("Bus[0].Mute", mute)
 return
 
 
 Volume_Down::
-    volume := vmRead("Bus[2].Gain")
-    volume -= 2
-    vmSet("Bus[0].Gain", volume)
-    vmSet("Bus[1].Gain", volume)
-    vmSet("Bus[2].Gain", volume)
+  volume := vmRead("Bus[2].Gain")
+  volume -= 2
+  vmSet("Bus[0].Gain", volume)
+  vmSet("Bus[1].Gain", volume)
+  vmSet("Bus[2].Gain", volume)
 return
 
 Volume_Up::
-    volume := Round(vmRead("Bus[2].Gain"))
-    volume += 2
-    vmSet("Bus[0].Gain", volume)
-    vmSet("Bus[1].Gain", volume)
-    vmSet("Bus[2].Gain", volume)
+  volume := Round(vmRead("Bus[2].Gain"))
+  volume += 2
+  vmSet("Bus[0].Gain", volume)
+  vmSet("Bus[1].Gain", volume)
+  vmSet("Bus[2].Gain", volume)
 return
 
 +Volume_Up::
-    volume = 0
-    vmSet("Bus[2].Gain", 0)
-    vmSet("Bus[1].Gain", 0)
-    vmSet("Bus[0].Gain", 0)
+  volume = 0
+  vmSet("Bus[2].Gain", 0)
+  vmSet("Bus[1].Gain", 0)
+  vmSet("Bus[0].Gain", 0)
 return
 
 
@@ -166,21 +200,21 @@ F15::vmToggle("Strip[3].Mute")
 
 ; Join discord chat
 +F11::
-    if WinExist("ahk_exe Discord.exe")
-        WinActivate, ahk_exe Discord.exe
+  if WinExist("ahk_exe Discord.exe")
+      WinActivate, ahk_exe Discord.exe
 
-    Send, ^t{!}root beer 
-    Sleep, 100  
-    Send, {Enter}
+  Send, ^t{!}root beer 
+  Sleep, 100  
+  Send, {Enter}
 return
 
 
 ; Discord / Music Audio 
 +F17::vmSet("Strip[4].Gain", 0)
 F17::
-    volume := Round(vmRead("Strip[4].Gain"))
-    volume += 2
-    vmSet("Strip[4].Gain", volume)
+  volume := Round(vmRead("Strip[4].Gain"))
+  volume += 2
+  vmSet("Strip[4].Gain", volume)
 return
 F18::
     volume := Round(vmRead("Strip[4].Gain"))
