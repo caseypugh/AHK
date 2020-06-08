@@ -7,35 +7,46 @@ SendMode Input
 SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode 2
 
+GroupAdd, Browsers, ahk_class MozillaWindowClass
+; GroupAdd, Browsers, ahk_class Chrome_WidgetWin_1
+
 ;;; Prefixes:
 ;;; ! Alt
 ;;; ^ Ctrl
 ;;; + Shift
 ;;; # Windows
 
-altTabGroup(currentWindow, windowGroup) {
+altTabGroup(windowGroup) {
+  WinGetTitle, currentWindow, A
   WinGet windows, List
   Loop %windows%
   {
     id := windows%A_Index%
     WinGetTitle window, ahk_id %id%
-    if (window != currentWindow && RegExMatch(window, windowGroup)) {
+    WinGet exe, ProcessName, ahk_id %id%
+    
+    if (window != currentWindow && exe == windowGroup) {
+      SetTitleMatchMode 1
+      ; MsgBox, %window%
       WinActivate, %window%
       Break
     }
   }
 }
 
-; Recreate Alt-` to alt-tab between similar windows. Supports only VSCode
+; Recreate Alt-` to alt-tab between similar windows. 
 !`::
-  #IfWinActive, ahk_exe Code.exe
-  WinGetTitle, windowTitle, A
+  IfWinActive, ahk_exe Code.exe
+  {
+    altTabGroup("Code.exe")
+  }
   
-  altTabGroup(windowTitle, "- Visual Studio Code")
+  IfWinActive, ahk_exe firefox.exe 
+  {
+    altTabGroup("firefox.exe")
+  }
 return
 
-GroupAdd, Browsers, ahk_class MozillaWindowClass
-; GroupAdd, Browsers, ahk_class Chrome_WidgetWin_1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                VS Code 
@@ -77,6 +88,7 @@ GroupAdd, Browsers, ahk_class MozillaWindowClass
   !l::Send ^l
   !r::Send ^r
   !f::Send ^f
+  !n::Send ^n
 
   ![::Send ^{PgUp}
   !]::Send ^{PgDn}
