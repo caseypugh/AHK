@@ -16,38 +16,6 @@ GroupAdd, Browsers, ahk_class MozillaWindowClass
 ;;; + Shift
 ;;; # Windows
 
-altTabGroup(windowGroup) {
-  WinGetTitle, currentWindow, A
-  WinGet windows, List
-  Loop %windows%
-  {
-    id := windows%A_Index%
-    WinGetTitle window, ahk_id %id%
-    WinGet exe, ProcessName, ahk_id %id%
-    
-    if (window != currentWindow && exe == windowGroup) {
-      SetTitleMatchMode 1
-      ; MsgBox, %window%
-      WinActivate, %window%
-      Break
-    }
-  }
-}
-
-; Recreate Alt-` to alt-tab between similar windows. 
-!`::
-  IfWinActive, ahk_exe Code.exe
-  {
-    altTabGroup("Code.exe")
-  }
-  
-  IfWinActive, ahk_exe firefox.exe 
-  {
-    altTabGroup("firefox.exe")
-  }
-return
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                VS Code 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -123,6 +91,37 @@ return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;        MAC-STUFF 🍎
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+altTabGroup(windowGroup) {
+  WinGetTitle, currentWindow, A
+  WinGet windows, List
+  Loop %windows%
+  {
+    id := windows%A_Index%
+    WinGetTitle window, ahk_id %id%
+    WinGet exe, ProcessName, ahk_id %id%
+    
+    if (window != currentWindow && exe == windowGroup) {
+      SetTitleMatchMode 1
+      ; MsgBox, %window%
+      WinActivate, %window%
+      Break
+    }
+  }
+}
+
+; Recreate Alt-` to alt-tab between windows of the same group. 
+!`::
+  IfWinActive, ahk_exe Code.exe
+  {
+    altTabGroup("Code.exe")
+  }
+  
+  IfWinActive, ahk_exe firefox.exe 
+  {
+    altTabGroup("firefox.exe")
+  }
+return
 
 
 !c::Send, ^c
