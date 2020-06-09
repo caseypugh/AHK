@@ -26,6 +26,14 @@ GroupAdd, Browsers, ahk_class MozillaWindowClass
       WinActivate, ahk_exe Unity.exe
       Sleep, 10
       WinActivate, ahk_exe Code.exe
+  return
+
+  !+r::
+    Send ^s
+    if WinExist("ahk_exe Unity.exe")
+      WinActivate, ahk_exe Unity.exe
+      Sleep, 200
+      Send, ^p
 
   return
 #IfWinActive, .ahk - AHK - Visual Studio Code
@@ -35,6 +43,9 @@ GroupAdd, Browsers, ahk_class MozillaWindowClass
   !w::Send ^w
   !p::Send ^p
   !f::Send ^f
+  !+f::Send ^+f
+  ![::Send ^{PgUp}
+  !]::Send ^{PgDn}
 #IfWinActive
 
 
@@ -89,7 +100,14 @@ GroupAdd, Browsers, ahk_class MozillaWindowClass
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;        MAC-STUFF 🍎
+;               MAC Magnet
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; !^Left::SendInput #{Left}
+; !^Right::SendInput #{Right}
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;               MAC-STUFF 🍎
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 altTabGroup(windowGroup) {
@@ -123,7 +141,6 @@ altTabGroup(windowGroup) {
   }
 return
 
-
 !c::Send, ^c
 !x::Send, ^x
 !v::Send, ^v
@@ -138,10 +155,13 @@ return
 ;; Alt-q to Quit
 !q::Send !{F4}
 
-#Left::SendInput ^{Left}
-#Right::SendInput ^{Right}
-#+Left::SendInput ^+{Left}
-#+Right::SendInput ^+{Right}
+;; Undo
+!+z::Send ^y
+
+; #Left::SendInput ^{Left}
+; #Right::SendInput ^{Right}
+; #+Left::SendInput ^+{Left}
+; #+Right::SendInput ^+{Right}
 
 !+Left::Send, +{Home}
 !+Right::Send, +{End}
@@ -149,7 +169,9 @@ return
 !Left::Send, {Home}
 
 !Down::Send,^{End}
+!+Down::Send, ^+{End}
 !Up::Send,^{Home}
+!+Up::Send, ^+{Home}
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -167,7 +189,6 @@ Volume_Mute::
   vmSet("Bus[1].Mute", mute)
   vmSet("Bus[0].Mute", mute)
 return
-
 
 Volume_Down::
   volume := vmRead("Bus[2].Gain")
@@ -266,6 +287,7 @@ return
     vmSet("Bus[2].Mute", 0)
     vmSet("Bus[1].Mute", 1)
     vmSet("Bus[0].Mute", 1)
+    vmSet("Command.Restart", 1)
 return
 
 
